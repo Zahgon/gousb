@@ -15,18 +15,8 @@
 package gousb
 
 func (e *endpoint) newStream(size, count int) (*stream, error) {
-	var ts []transferIntf
-	for i := 0; i < count; i++ {
-		t, err := newUSBTransfer(e.ctx, e.h, &e.Desc, size)
-		if err != nil {
-			for _, t := range ts {
-				t.free()
-			}
-			return nil, err
-		}
-		ts = append(ts, t)
-	}
-	return newStream(ts), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // NewStream prepares a new read stream that will keep reading data from
@@ -39,12 +29,8 @@ func (e *endpoint) newStream(size, count int) (*stream, error) {
 // of EndpointDesc.MaxPacketSize to avoid overflows, see documentation
 // in InEndpoint.Read for more details.
 func (e *InEndpoint) NewStream(size, count int) (*ReadStream, error) {
-	s, err := e.newStream(size, count)
-	if err != nil {
-		return nil, err
-	}
-	s.submitAll()
-	return &ReadStream{s: s}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // NewStream prepares a new write stream that will write data in the
@@ -53,9 +39,6 @@ func (e *InEndpoint) NewStream(size, count int) (*ReadStream, error) {
 // the writes, a Stream reduces the latency between subsequent transfers and
 // increases writing throughput.
 func (e *OutEndpoint) NewStream(size, count int) (*WriteStream, error) {
-	s, err := e.newStream(size, count)
-	if err != nil {
-		return nil, err
-	}
-	return &WriteStream{s: s}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

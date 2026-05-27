@@ -16,7 +16,6 @@
 package gousb
 
 import (
-	"fmt"
 	"sync"
 )
 
@@ -45,23 +44,15 @@ type ConfigDesc struct {
 }
 
 // String returns the human-readable description of the configuration descriptor.
-func (c ConfigDesc) String() string {
-	return fmt.Sprintf("Configuration %d", c.Number)
-}
+func (c ConfigDesc) String() string { _ = "STUB: not implemented"; return "" }
 
 func (c ConfigDesc) intfDesc(num int) (*InterfaceDesc, error) {
+	_ = "STUB: not implemented"
 	// In an ideal world, interfaces in the descriptor would be numbered
 	// contiguously starting from 0, as required by the specification. In the
 	// real world however the specification is sometimes ignored:
 	// https://github.com/google/gousb/issues/65
-	ifs := make([]int, len(c.Interfaces))
-	for i, desc := range c.Interfaces {
-		if desc.Number == num {
-			return &desc, nil
-		}
-		ifs[i] = desc.Number
-	}
-	return nil, fmt.Errorf("interface %d not found, available interface numbers: %v", num, ifs)
+	return nil, nil
 }
 
 // Config represents a USB device set to use a particular configuration.
@@ -79,70 +70,19 @@ type Config struct {
 }
 
 // Close releases the underlying device, allowing the caller to switch the device to a different configuration.
-func (c *Config) Close() error {
-	if c.dev == nil {
-		return nil
-	}
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if len(c.claimed) > 0 {
-		var ifs []int
-		for k := range c.claimed {
-			ifs = append(ifs, k)
-		}
-		return fmt.Errorf("failed to release %s, interfaces %v are still open", c, ifs)
-	}
-	c.dev.mu.Lock()
-	defer c.dev.mu.Unlock()
-	c.dev.claimed = nil
-	c.dev = nil
-	return nil
-}
+func (c *Config) Close() error { _ = "STUB: not implemented"; return nil }
 
 // String returns the human-readable description of the configuration.
-func (c *Config) String() string {
-	return fmt.Sprintf("%s,config=%d", c.dev.String(), c.Desc.Number)
-}
+func (c *Config) String() string { _ = "STUB: not implemented"; return "" }
 
 // Interface claims and returns an interface on a USB device.
 // num specifies the number of an interface to claim, and alt specifies the
 // alternate setting number for that interface.
 func (c *Config) Interface(num, alt int) (*Interface, error) {
-	if c.dev == nil {
-		return nil, fmt.Errorf("Interface(%d, %d) called on %s after Close", num, alt, c)
-	}
-
-	intf, err := c.Desc.intfDesc(num)
-	if err != nil {
-		return nil, fmt.Errorf("descriptor of interface %d in %s: %v", num, c, err)
-	}
-	altInfo, err := intf.altSetting(alt)
-	if err != nil {
-		return nil, fmt.Errorf("descriptor of alternate setting %d of interface %d in %s: %v", alt, num, c, err)
-	}
-
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if c.claimed[num] {
-		return nil, fmt.Errorf("interface %d on %s is already claimed", num, c)
-	}
-
-	// Claim the interface
-	if err := c.dev.ctx.libusb.claim(c.dev.handle, uint8(num)); err != nil {
-		return nil, fmt.Errorf("failed to claim interface %d on %s: %v", num, c, err)
-	}
-
-	// Select an alternate setting if needed (device has multiple alternate settings).
-	if len(intf.AltSettings) > 1 {
-		if err := c.dev.ctx.libusb.setAlt(c.dev.handle, uint8(num), uint8(alt)); err != nil {
-			c.dev.ctx.libusb.release(c.dev.handle, uint8(num))
-			return nil, fmt.Errorf("failed to set alternate config %d on interface %d of %s: %v", alt, num, c, err)
-		}
-	}
-
-	c.claimed[num] = true
-	return &Interface{
-		Setting: *altInfo,
-		config:  c,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Claim the interface
+
+// Select an alternate setting if needed (device has multiple alternate settings).

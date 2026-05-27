@@ -15,10 +15,6 @@
 
 package gousb
 
-import (
-	"fmt"
-)
-
 // #include <libusb.h>
 import "C"
 
@@ -26,17 +22,9 @@ import "C"
 type Error C.int
 
 // Error implements the error interface.
-func (e Error) Error() string {
-	return fmt.Sprintf("libusb: %s [code %d]", errorString[e], e)
-}
+func (e Error) Error() string { _ = "STUB: not implemented"; return "" }
 
-func fromErrNo(errno C.int) error {
-	err := Error(errno)
-	if err == Success {
-		return nil
-	}
-	return err
-}
+func fromErrNo(errno C.int) error { _ = "STUB: not implemented"; return nil }
 
 // Defined result codes.
 const (
@@ -100,11 +88,7 @@ var transferStatusDescription = map[TransferStatus]string{
 }
 
 // String returns a human-readable transfer status.
-func (ts TransferStatus) String() string {
-	return transferStatusDescription[ts]
-}
+func (ts TransferStatus) String() string { _ = "STUB: not implemented"; return "" }
 
 // Error implements the error interface.
-func (ts TransferStatus) Error() string {
-	return ts.String()
-}
+func (ts TransferStatus) Error() string { _ = "STUB: not implemented"; return "" }

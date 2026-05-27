@@ -17,7 +17,6 @@ package gousb
 
 // #include <libusb.h>
 import "C"
-import "strconv"
 
 // Class represents a USB-IF (Implementers Forum) class or subclass code.
 type Class uint8
@@ -74,20 +73,13 @@ var classDescription = map[Class]string{
 	ClassVendorSpec:         "vendor-specific",
 }
 
-func (c Class) String() string {
-	if d, ok := classDescription[c]; ok {
-		return d
-	}
-	return strconv.Itoa(int(c))
-}
+func (c Class) String() string { _ = "STUB: not implemented"; return "" }
 
 // Protocol is the interface class protocol, qualified by the values
 // of interface class and subclass.
 type Protocol uint8
 
-func (p Protocol) String() string {
-	return strconv.Itoa(int(p))
-}
+func (p Protocol) String() string { _ = "STUB: not implemented"; return "" }
 
 // DescriptorType identifies the type of a USB descriptor.
 type DescriptorType uint8
@@ -117,9 +109,7 @@ var descriptorTypeDescription = map[DescriptorType]string{
 	DescriptorTypeHub:       "hub",
 }
 
-func (dt DescriptorType) String() string {
-	return descriptorTypeDescription[dt]
-}
+func (dt DescriptorType) String() string { _ = "STUB: not implemented"; return "" }
 
 // EndpointDirection defines the direction of data flow - IN (device to host)
 // or OUT (host to device).
@@ -139,9 +129,7 @@ var endpointDirectionDescription = map[EndpointDirection]string{
 	EndpointDirectionOut: "OUT",
 }
 
-func (ed EndpointDirection) String() string {
-	return endpointDirectionDescription[ed]
-}
+func (ed EndpointDirection) String() string { _ = "STUB: not implemented"; return "" }
 
 // TransferType defines the endpoint transfer type.
 type TransferType uint8
@@ -163,9 +151,7 @@ var transferTypeDescription = map[TransferType]string{
 }
 
 // String returns a human-readable name of the endpoint transfer type.
-func (tt TransferType) String() string {
-	return transferTypeDescription[tt]
-}
+func (tt TransferType) String() string { _ = "STUB: not implemented"; return "" }
 
 // IsoSyncType defines the isochronous transfer synchronization type.
 type IsoSyncType uint8
@@ -187,9 +173,7 @@ var isoSyncTypeDescription = map[IsoSyncType]string{
 }
 
 // String returns a human-readable description of the synchronization type.
-func (ist IsoSyncType) String() string {
-	return isoSyncTypeDescription[ist]
-}
+func (ist IsoSyncType) String() string { _ = "STUB: not implemented"; return "" }
 
 // UsageType defines the transfer usage type for isochronous and interrupt
 // transfers.
@@ -218,9 +202,7 @@ var usageTypeDescription = map[UsageType]string{
 	InterruptUsageTypeNotification: "notification",
 }
 
-func (ut UsageType) String() string {
-	return usageTypeDescription[ut]
-}
+func (ut UsageType) String() string { _ = "STUB: not implemented"; return "" }
 
 // Control request type bit fields as defined in the USB spec. All values are
 // of uint8 type.  These constants can be used with Device.Control() method to
@@ -263,9 +245,7 @@ var deviceSpeedDescription = map[Speed]string{
 }
 
 // String returns a human-readable name of the device speed.
-func (s Speed) String() string {
-	return deviceSpeedDescription[s]
-}
+func (s Speed) String() string { _ = "STUB: not implemented"; return "" }
 
 const (
 	selfPoweredMask  = 0x40

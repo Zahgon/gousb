@@ -22,8 +22,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/google/gousb"
 )
@@ -43,36 +41,11 @@ var (
 )
 
 func parseVIDPID(vidPid string) (gousb.ID, gousb.ID, error) {
-	s := strings.Split(vidPid, ":")
-	if len(s) != 2 {
-		return 0, 0, fmt.Errorf("want VID:PID, two 32-bit hex numbers separated by colon, e.g. 1d6b:0002")
-	}
-	vid, err := strconv.ParseUint(s[0], 16, 32)
-	if err != nil {
-		return 0, 0, fmt.Errorf("VID must be a hexadecimal 32-bit number, e.g. 1d6b")
-	}
-	pid, err := strconv.ParseUint(s[1], 16, 32)
-	if err != nil {
-		return 0, 0, fmt.Errorf("PID must be a hexadecimal 32-bit number, e.g. 1d6b")
-	}
-	return gousb.ID(vid), gousb.ID(pid), nil
+	_ = "STUB: not implemented"
+	return *new(gousb.ID), *new(gousb.ID), nil
 }
 
-func parseBusAddr(busAddr string) (int, int, error) {
-	s := strings.Split(busAddr, ":")
-	if len(s) != 2 {
-		return 0, 0, fmt.Errorf("want bus:addr, two 8-bit decimal unsigned integers separated by colon, e.g. 1:1")
-	}
-	bus, err := strconv.ParseUint(s[0], 10, 8)
-	if err != nil {
-		return 0, 0, fmt.Errorf("bus number must be an 8-bit decimal unsigned integer")
-	}
-	addr, err := strconv.ParseUint(s[1], 10, 8)
-	if err != nil {
-		return 0, 0, fmt.Errorf("device address must be an 8-bit decimal unsigned integer")
-	}
-	return int(bus), int(addr), nil
-}
+func parseBusAddr(busAddr string) (int, int, error) { _ = "STUB: not implemented"; return 0, 0, nil }
 
 type contextReader interface {
 	ReadContext(context.Context, []byte) (int, error)

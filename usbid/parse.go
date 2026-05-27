@@ -16,11 +16,7 @@
 package usbid
 
 import (
-	"bufio"
-	"fmt"
 	"io"
-	"strconv"
-	"strings"
 
 	"github.com/google/gousb"
 )
@@ -34,11 +30,13 @@ type Vendor struct {
 
 // String returns the name of the vendor.
 func (v Vendor) String() string {
-	return v.Name
+	_ = "STUB: not implemented"
+
+	// A Product contains the name of the product (from a particular vendor) and
+	// the names of any interfaces that were specified.
+	return ""
 }
 
-// A Product contains the name of the product (from a particular vendor) and
-// the names of any interfaces that were specified.
 type Product struct {
 	Name      string
 	Interface map[gousb.ID]string
@@ -46,10 +44,12 @@ type Product struct {
 
 // String returns the name of the product.
 func (p Product) String() string {
-	return p.Name
+	_ = "STUB: not implemented"
+
+	// A Class contains the name of the class and mappings for each subclass.
+	return ""
 }
 
-// A Class contains the name of the class and mappings for each subclass.
 type Class struct {
 	Name     string
 	SubClass map[gousb.Class]*SubClass
@@ -57,10 +57,12 @@ type Class struct {
 
 // String returns the name of the class.
 func (c Class) String() string {
-	return c.Name
+	_ = "STUB: not implemented"
+
+	// A SubClass contains the name of the subclass and any associated protocols.
+	return ""
 }
 
-// A SubClass contains the name of the subclass and any associated protocols.
 type SubClass struct {
 	Name     string
 	Protocol map[gousb.Protocol]string
@@ -68,177 +70,34 @@ type SubClass struct {
 
 // String returns the name of the SubClass.
 func (s SubClass) String() string {
-	return s.Name
+	_ = "STUB: not implemented"
+
+	// ParseIDs parses and returns mappings from the given reader.  In general, this
+	// should not be necessary, as a set of mappings is already embedded in the library.
+	// If a new or specialized file is obtained, this can be used to retrieve the mappings,
+	// which can be stored in the global Vendors and Classes map.
+	return ""
 }
 
-// ParseIDs parses and returns mappings from the given reader.  In general, this
-// should not be necessary, as a set of mappings is already embedded in the library.
-// If a new or specialized file is obtained, this can be used to retrieve the mappings,
-// which can be stored in the global Vendors and Classes map.
 func ParseIDs(r io.Reader) (map[gousb.ID]*Vendor, map[gousb.Class]*Class, error) {
-	vendors := make(map[gousb.ID]*Vendor, 2800)
-	classes := make(map[gousb.Class]*Class) // TODO(kevlar): count
-
-	split := func(s string) (kind string, level int, id uint64, name string, err error) {
-		pieces := strings.SplitN(s, "  ", 2)
-		if len(pieces) != 2 {
-			err = fmt.Errorf("malformatted line %q", s)
-			return
-		}
-
-		// Save the name
-		name = pieces[1]
-
-		// Parse out the level
-		for len(pieces[0]) > 0 && pieces[0][0] == '\t' {
-			level, pieces[0] = level+1, pieces[0][1:]
-		}
-
-		// Parse the first piece to see if it has a kind
-		first := strings.SplitN(pieces[0], " ", 2)
-		if len(first) == 2 {
-			kind, pieces[0] = first[0], first[1]
-		}
-
-		// Parse the ID
-		i, err := strconv.ParseUint(pieces[0], 16, 16)
-		if err != nil {
-			err = fmt.Errorf("malformatted id %q: %s", pieces[0], err)
-			return
-		}
-		id = i
-
-		return
-	}
-
-	// Hold the interim values
-	var vendor *Vendor
-	var device *Product
-
-	parseVendor := func(level int, raw uint64, name string) error {
-		id := gousb.ID(raw)
-
-		switch level {
-		case 0:
-			vendor = &Vendor{
-				Name: name,
-			}
-			vendors[id] = vendor
-
-		case 1:
-			if vendor == nil {
-				return fmt.Errorf("product line without vendor line")
-			}
-
-			device = &Product{
-				Name: name,
-			}
-			if vendor.Product == nil {
-				vendor.Product = make(map[gousb.ID]*Product)
-			}
-			vendor.Product[id] = device
-
-		case 2:
-			if device == nil {
-				return fmt.Errorf("interface line without device line")
-			}
-
-			if device.Interface == nil {
-				device.Interface = make(map[gousb.ID]string)
-			}
-			device.Interface[id] = name
-
-		default:
-			return fmt.Errorf("too many levels of nesting for vendor block")
-		}
-
-		return nil
-	}
-
-	// Hold the interim values
-	var class *Class
-	var subclass *SubClass
-
-	parseClass := func(level int, id uint64, name string) error {
-		switch level {
-		case 0:
-			class = &Class{
-				Name: name,
-			}
-			classes[gousb.Class(id)] = class
-
-		case 1:
-			if class == nil {
-				return fmt.Errorf("subclass line without class line")
-			}
-
-			subclass = &SubClass{
-				Name: name,
-			}
-			if class.SubClass == nil {
-				class.SubClass = make(map[gousb.Class]*SubClass)
-			}
-			class.SubClass[gousb.Class(id)] = subclass
-
-		case 2:
-			if subclass == nil {
-				return fmt.Errorf("protocol line without subclass line")
-			}
-
-			if subclass.Protocol == nil {
-				subclass.Protocol = make(map[gousb.Protocol]string)
-			}
-			subclass.Protocol[gousb.Protocol(id)] = name
-
-		default:
-			return fmt.Errorf("too many levels of nesting for class")
-		}
-
-		return nil
-	}
-
-	// TODO(kevlar): Parse class information, etc
-	//var class *Class
-	//var subclass *SubClass
-
-	var kind string
-
-	lines := bufio.NewReaderSize(r, 512)
-parseLines:
-	for lineno := 0; ; lineno++ {
-		b, isPrefix, err := lines.ReadLine()
-		switch {
-		case err == io.EOF:
-			break parseLines
-		case err != nil:
-			return nil, nil, err
-		case isPrefix:
-			return nil, nil, fmt.Errorf("line %d: line too long", lineno)
-		}
-		line := string(b)
-
-		if len(line) == 0 || line[0] == '#' {
-			continue
-		}
-
-		k, level, id, name, err := split(line)
-		if err != nil {
-			return nil, nil, fmt.Errorf("line %d: %s", lineno, err)
-		}
-		if k != "" {
-			kind = k
-		}
-
-		switch kind {
-		case "":
-			err = parseVendor(level, id, name)
-		case "C":
-			err = parseClass(level, id, name)
-		}
-		if err != nil {
-			return nil, nil, fmt.Errorf("line %d: %s", lineno, err)
-		}
-	}
-
-	return vendors, classes, nil
+	_ = "STUB: not implemented"
+	return nil, nil, nil
 }
+
+// TODO(kevlar): count
+
+// Save the name
+
+// Parse out the level
+
+// Parse the first piece to see if it has a kind
+
+// Parse the ID
+
+// Hold the interim values
+
+// Hold the interim values
+
+// TODO(kevlar): Parse class information, etc
+//var class *Class
+//var subclass *SubClass

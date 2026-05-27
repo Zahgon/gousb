@@ -125,8 +125,6 @@ see the excellent "USB in a nutshell" guide: http://www.beyondlogic.org/usbnutsh
 package gousb
 
 import (
-	"errors"
-	"fmt"
 	"sync"
 )
 
@@ -144,29 +142,12 @@ type Context struct {
 // will print out more debugging information.
 // TODO(sebek): in the next major release, replace int levels with
 // Go-typed constants.
-func (c *Context) Debug(level int) {
-	c.libusb.setDebug(c.ctx, level)
-}
+func (c *Context) Debug(level int) { _ = "STUB: not implemented"; return }
 
-func newContextWithImpl(impl libusbIntf) *Context {
-	c, err := impl.init()
-	if err != nil {
-		panic(err)
-	}
-	ctx := &Context{
-		ctx:     c,
-		done:    make(chan struct{}),
-		libusb:  impl,
-		devices: make(map[*Device]bool),
-	}
-	go impl.handleEvents(ctx.ctx, ctx.done)
-	return ctx
-}
+func newContextWithImpl(impl libusbIntf) *Context { _ = "STUB: not implemented"; return nil }
 
 // NewContext returns a new Context instance with default ContextOptions.
-func NewContext() *Context {
-	return ContextOptions{}.New()
-}
+func NewContext() *Context { _ = "STUB: not implemented"; return nil }
 
 // DeviceDiscovery controls USB device discovery.
 type DeviceDiscovery int
@@ -189,11 +170,7 @@ type ContextOptions struct {
 }
 
 // New creates a Context, taking into account the optional flags contained in ContextOptions
-func (o ContextOptions) New() *Context {
-	return newContextWithImpl(libusbImpl{
-		discovery: o.DeviceDiscovery,
-	})
-}
+func (o ContextOptions) New() *Context { _ = "STUB: not implemented"; return nil }
 
 // OpenDevices calls opener with each enumerated device.
 // If the opener returns true, the device is opened and a Device is returned if the operation succeeds.
@@ -201,40 +178,8 @@ func (o ContextOptions) New() *Context {
 // If there are any errors enumerating the devices,
 // the final one is returned along with any successfully opened devices.
 func (c *Context) OpenDevices(opener func(desc *DeviceDesc) bool) ([]*Device, error) {
-	if c.ctx == nil {
-		return nil, errors.New("OpenDevices called on a closed or uninitialized Context")
-	}
-	list, err := c.libusb.getDevices(c.ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	var reterr error
-	var ret []*Device
-	for _, dev := range list {
-		desc, err := c.libusb.getDeviceDesc(dev)
-		defer c.libusb.dereference(dev)
-		if err != nil {
-			reterr = err
-			continue
-		}
-
-		if !opener(desc) {
-			continue
-		}
-		handle, err := c.libusb.open(dev)
-		if err != nil {
-			reterr = err
-			continue
-		}
-		o := &Device{handle: handle, ctx: c, Desc: desc}
-		ret = append(ret, o)
-		c.mu.Lock()
-		c.devices[o] = true
-		c.mu.Unlock()
-
-	}
-	return ret, reterr
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // OpenDeviceWithFileDescriptor takes a (Unix) file descriptor of an opened USB
@@ -254,22 +199,8 @@ func (c *Context) OpenDevices(opener func(desc *DeviceDesc) bool) ([]*Device, er
 //
 // An error is returned in case the file descriptor is not valid.
 func (c *Context) OpenDeviceWithFileDescriptor(fd uintptr) (*Device, error) {
-	handle, err := c.libusb.wrapSysDevice(c.ctx, fd)
-	if err != nil {
-		return nil, err
-	}
-	dev := c.libusb.getDevice(handle)
-	desc, err := c.libusb.getDeviceDesc(dev)
-	if err != nil {
-		return nil, fmt.Errorf("device was opened, but getting device descriptor failed: %v", err)
-	}
-
-	o := &Device{handle: handle, ctx: c, Desc: desc}
-	c.mu.Lock()
-	c.devices[o] = true
-	c.mu.Unlock()
-
-	return o, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // OpenDeviceWithVIDPID opens Device from specific VendorId and ProductId.
@@ -279,49 +210,13 @@ func (c *Context) OpenDeviceWithFileDescriptor(fd uintptr) (*Device, error) {
 // it will return a non-nil device and non-nil error. A Device.Close() must
 // be called to release the device if the returned device wasn't nil.
 func (c *Context) OpenDeviceWithVIDPID(vid, pid ID) (*Device, error) {
-	var found bool
-	devs, err := c.OpenDevices(func(desc *DeviceDesc) bool {
-		if found {
-			return false
-		}
-		if desc.Vendor == ID(vid) && desc.Product == ID(pid) {
-			found = true
-			return true
-		}
-		return false
-	})
-	if len(devs) == 0 {
-		return nil, err
-	}
-	return devs[0], nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
-func (c *Context) closeDev(d *Device) {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	c.libusb.close(d.handle)
-	delete(c.devices, d)
-}
+func (c *Context) closeDev(d *Device) { _ = "STUB: not implemented"; return }
 
-func (c *Context) checkOpenDevs() error {
-	c.mu.Lock()
-	defer c.mu.Unlock()
-	if l := len(c.devices); l > 0 {
-		return fmt.Errorf("Context.Close called while %d Devices are still open, Close may be called only after all previously opened devices were successfuly closed", l)
-	}
-	return nil
-}
+func (c *Context) checkOpenDevs() error { _ = "STUB: not implemented"; return nil }
 
 // Close releases the Context and all associated resources.
-func (c *Context) Close() error {
-	if c.ctx == nil {
-		return nil
-	}
-	if err := c.checkOpenDevs(); err != nil {
-		return err
-	}
-	c.done <- struct{}{}
-	err := c.libusb.exit(c.ctx)
-	c.ctx = nil
-	return err
-}
+func (c *Context) Close() error { _ = "STUB: not implemented"; return nil }

@@ -17,9 +17,7 @@ package usbid
 
 import (
 	"log"
-	"net/http"
 	"strings"
-	"time"
 
 	"github.com/google/gousb"
 )
@@ -43,23 +41,7 @@ var (
 // This should usually only be necessary if the mappings in the library are
 // stale.  The contents of this file as of February 2012 are embedded in the
 // library itself.
-func LoadFromURL(url string) error {
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	ids, cls, err := ParseIDs(resp.Body)
-	if err != nil {
-		return err
-	}
-
-	Vendors = ids
-	Classes = cls
-	LastUpdate = time.Now()
-	return nil
-}
+func LoadFromURL(url string) error { _ = "STUB: not implemented"; return nil }
 
 //go:generate go run regen/regen.go --template regen/load_data.go.tpl -o load_data.go
 

@@ -15,11 +15,6 @@
 
 package gousb
 
-import (
-	"fmt"
-	"sort"
-)
-
 // InterfaceDesc contains information about a USB interface, extracted from
 // the descriptor.
 type InterfaceDesc struct {
@@ -30,21 +25,13 @@ type InterfaceDesc struct {
 }
 
 func (i *InterfaceDesc) altSetting(alt int) (*InterfaceSetting, error) {
-	alts := make([]int, len(i.AltSettings))
-	for a, s := range i.AltSettings {
-		if s.Alternate == alt {
-			return &s, nil
-		}
-		alts[a] = s.Alternate
-	}
-	return nil, fmt.Errorf("alternate setting %d not found for %s, available alt settings: %v", alt, i, alts)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // String returns a human-readable description of the interface descriptor and
 // its alternate settings.
-func (i InterfaceDesc) String() string {
-	return fmt.Sprintf("Interface %d (%d alternate settings)", i.Number, len(i.AltSettings))
-}
+func (i InterfaceDesc) String() string { _ = "STUB: not implemented"; return "" }
 
 // InterfaceSetting contains information about a USB interface with a particular
 // alternate setting, extracted from the descriptor.
@@ -66,20 +53,11 @@ type InterfaceSetting struct {
 	iInterface int // index of a string descriptor describing this interface.
 }
 
-func (a InterfaceSetting) sortedEndpointIds() []string {
-	var eps []string
-	for _, ei := range a.Endpoints {
-		eps = append(eps, fmt.Sprintf("%s(%d,%s)", ei.Address, ei.Number, ei.Direction))
-	}
-	sort.Strings(eps)
-	return eps
-}
+func (a InterfaceSetting) sortedEndpointIds() []string { _ = "STUB: not implemented"; return nil }
 
 // String returns a human-readable description of the particular
 // alternate setting of an interface.
-func (a InterfaceSetting) String() string {
-	return fmt.Sprintf("Interface %d alternate setting %d (available endpoints: %v)", a.Number, a.Alternate, a.sortedEndpointIds())
-}
+func (a InterfaceSetting) String() string { _ = "STUB: not implemented"; return "" }
 
 // Interface is a representation of a claimed interface with a particular setting.
 // To access device endpoints use InEndpoint() and OutEndpoint() methods.
@@ -90,60 +68,24 @@ type Interface struct {
 	config *Config
 }
 
-func (i *Interface) String() string {
-	return fmt.Sprintf("%s,if=%d,alt=%d", i.config, i.Setting.Number, i.Setting.Alternate)
-}
+func (i *Interface) String() string { _ = "STUB: not implemented"; return "" }
 
 // Close releases the interface.
-func (i *Interface) Close() {
-	if i.config == nil {
-		return
-	}
-	i.config.dev.ctx.libusb.release(i.config.dev.handle, uint8(i.Setting.Number))
-	i.config.mu.Lock()
-	defer i.config.mu.Unlock()
-	delete(i.config.claimed, i.Setting.Number)
-	i.config = nil
-}
+func (i *Interface) Close() { _ = "STUB: not implemented"; return }
 
 func (i *Interface) openEndpoint(epAddr EndpointAddress) (*endpoint, error) {
-	var ep EndpointDesc
-	ep, ok := i.Setting.Endpoints[epAddr]
-	if !ok {
-		return nil, fmt.Errorf("%s does not have endpoint with address %s. Available endpoints: %v", i, epAddr, i.Setting.sortedEndpointIds())
-	}
-	return &endpoint{
-		InterfaceSetting: i.Setting,
-		Desc:             ep,
-		h:                i.config.dev.handle,
-		ctx:              i.config.dev.ctx,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // InEndpoint prepares an IN endpoint for transfer.
 func (i *Interface) InEndpoint(epNum int) (*InEndpoint, error) {
-	if i.config == nil {
-		return nil, fmt.Errorf("InEndpoint(%d) called on %s after Close", epNum, i)
-	}
-	ep, err := i.openEndpoint(EndpointAddress(0x80 | epNum))
-	if err != nil {
-		return nil, err
-	}
-	return &InEndpoint{
-		endpoint: ep,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // OutEndpoint prepares an OUT endpoint for transfer.
 func (i *Interface) OutEndpoint(epNum int) (*OutEndpoint, error) {
-	if i.config == nil {
-		return nil, fmt.Errorf("OutEndpoint(%d) called on %s after Close", epNum, i)
-	}
-	ep, err := i.openEndpoint(EndpointAddress(epNum))
-	if err != nil {
-		return nil, err
-	}
-	return &OutEndpoint{
-		endpoint: ep,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

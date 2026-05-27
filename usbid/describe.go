@@ -25,30 +25,12 @@
 //	Classify - Pretty-print the class/protocol info for a device/interface
 package usbid
 
-import (
-	"fmt"
-
-	"github.com/google/gousb"
-)
-
 // Describe returns a human readable string describing the vendor and product
 // of the given device.
 //
 // The given val must be one of the following:
 //   - *gousb.DeviceDesc       "Product (Vendor)"
-func Describe(val interface{}) string {
-	switch val := val.(type) {
-	case *gousb.DeviceDesc:
-		if v, ok := Vendors[val.Vendor]; ok {
-			if d, ok := v.Product[val.Product]; ok {
-				return fmt.Sprintf("%s (%s)", d, v)
-			}
-			return fmt.Sprintf("Unknown (%s)", v)
-		}
-		return fmt.Sprintf("Unknown %s:%s", val.Vendor, val.Product)
-	}
-	return fmt.Sprintf("Unknown (%T)", val)
-}
+func Describe(val interface{}) string { _ = "STUB: not implemented"; return "" }
 
 // Classify returns a human-readable string describing the class, subclass,
 // and protocol associated with a device or interface.
@@ -56,28 +38,4 @@ func Describe(val interface{}) string {
 // The given val must be one of the following:
 //   - *gousb.DeviceDesc       "Class (SubClass) Protocol"
 //   - gousb.InterfaceSetup   "IfClass (IfSubClass) IfProtocol"
-func Classify(val interface{}) string {
-	var (
-		class, sub gousb.Class
-		proto      gousb.Protocol
-	)
-	switch val := val.(type) {
-	case *gousb.DeviceDesc:
-		class, sub, proto = val.Class, val.SubClass, val.Protocol
-	case gousb.InterfaceSetting:
-		class, sub, proto = val.Class, val.SubClass, val.Protocol
-	default:
-		return fmt.Sprintf("Unknown (%T)", val)
-	}
-
-	if c, ok := Classes[class]; ok {
-		if s, ok := c.SubClass[sub]; ok {
-			if p, ok := s.Protocol[proto]; ok {
-				return fmt.Sprintf("%s (%s) %s", c, s, p)
-			}
-			return fmt.Sprintf("%s (%s)", c, s)
-		}
-		return fmt.Sprintf("%s", c)
-	}
-	return fmt.Sprintf("Unknown %s.%s.%s", class, sub, proto)
-}
+func Classify(val interface{}) string { _ = "STUB: not implemented"; return "" }

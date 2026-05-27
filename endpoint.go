@@ -17,8 +17,6 @@ package gousb
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"time"
 )
 
@@ -26,9 +24,7 @@ import (
 type EndpointAddress uint8
 
 // String implements the Stringer interface.
-func (a EndpointAddress) String() string {
-	return fmt.Sprintf("0x%02x", uint8(a))
-}
+func (a EndpointAddress) String() string { _ = "STUB: not implemented"; return "" }
 
 // EndpointDesc contains the information about an interface endpoint, extracted
 // from the descriptor.
@@ -58,18 +54,7 @@ type EndpointDesc struct {
 }
 
 // String returns the human-readable description of the endpoint.
-func (e EndpointDesc) String() string {
-	ret := make([]string, 0, 3)
-	ret = append(ret, fmt.Sprintf("ep #%d %s (address %s) %s", e.Number, e.Direction, e.Address, e.TransferType))
-	switch e.TransferType {
-	case TransferTypeIsochronous:
-		ret = append(ret, fmt.Sprintf("- %s %s", e.IsoSyncType, e.UsageType))
-	case TransferTypeInterrupt:
-		ret = append(ret, fmt.Sprintf("- %s", e.UsageType))
-	}
-	ret = append(ret, fmt.Sprintf("[%d bytes]", e.MaxPacketSize))
-	return strings.Join(ret, " ")
-}
+func (e EndpointDesc) String() string { _ = "STUB: not implemented"; return "" }
 
 type endpoint struct {
 	h *libusbDevHandle
@@ -81,32 +66,11 @@ type endpoint struct {
 }
 
 // String returns a human-readable description of the endpoint.
-func (e *endpoint) String() string {
-	return e.Desc.String()
-}
+func (e *endpoint) String() string { _ = "STUB: not implemented"; return "" }
 
 func (e *endpoint) transfer(ctx context.Context, buf []byte) (int, error) {
-	t, err := newUSBTransfer(e.ctx, e.h, &e.Desc, len(buf))
-	if err != nil {
-		return 0, err
-	}
-	defer t.free()
-	if e.Desc.Direction == EndpointDirectionOut {
-		copy(t.data(), buf)
-	}
-
-	if err := t.submit(); err != nil {
-		return 0, err
-	}
-
-	n, err := t.wait(ctx)
-	if e.Desc.Direction == EndpointDirectionIn {
-		copy(buf, t.data())
-	}
-	if err != nil {
-		return n, err
-	}
-	return n, nil
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 // InEndpoint represents an IN endpoint open for transfer.
@@ -127,9 +91,7 @@ type InEndpoint struct {
 // If that happens, Read will return an error signaling an overflow.
 // See http://libusb.sourceforge.net/api-1.0/libusb_packetoverflow.html
 // for more details.
-func (e *InEndpoint) Read(buf []byte) (int, error) {
-	return e.transfer(context.Background(), buf)
-}
+func (e *InEndpoint) Read(buf []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // ReadContext reads data from an IN endpoint. ReadContext returns number of
 // bytes obtained from the endpoint. ReadContext may return non-zero length
@@ -145,10 +107,12 @@ func (e *InEndpoint) Read(buf []byte) (int, error) {
 // See http://libusb.sourceforge.net/api-1.0/libusb_packetoverflow.html
 // for more details.
 func (e *InEndpoint) ReadContext(ctx context.Context, buf []byte) (int, error) {
-	return e.transfer(ctx, buf)
+	_ = "STUB: not implemented"
+	return 0, nil
+
+	// OutEndpoint represents an OUT endpoint open for transfer.
 }
 
-// OutEndpoint represents an OUT endpoint open for transfer.
 type OutEndpoint struct {
 	*endpoint
 }
@@ -156,9 +120,7 @@ type OutEndpoint struct {
 // Write writes data to an OUT endpoint. Write returns number of bytes comitted
 // to the endpoint. Write may return non-zero length even if the returned error
 // is not nil (partial write).
-func (e *OutEndpoint) Write(buf []byte) (int, error) {
-	return e.transfer(context.Background(), buf)
-}
+func (e *OutEndpoint) Write(buf []byte) (int, error) { _ = "STUB: not implemented"; return 0, nil }
 
 // WriteContext writes data to an OUT endpoint. WriteContext returns number of
 // bytes comitted to the endpoint. WriteContext may return non-zero length even
@@ -167,5 +129,6 @@ func (e *OutEndpoint) Write(buf []byte) (int, error) {
 // the context is cancelled, WriteContext will cancel the underlying transfers,
 // resulting in TransferCancelled error.
 func (e *OutEndpoint) WriteContext(ctx context.Context, buf []byte) (int, error) {
-	return e.transfer(ctx, buf)
+	_ = "STUB: not implemented"
+	return 0, nil
 }
